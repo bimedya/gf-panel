@@ -5,6 +5,7 @@ function App() {
   const [rows, setRows] = useState([]);
 
   async function addExampleRow() {
+    console.log("Supabase bağlantısı test ediliyor:", supabase);
     await supabase.from("news_list").insert([
       { 
         title: "Test Haberi", 
