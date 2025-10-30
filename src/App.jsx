@@ -1,29 +1,16 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabase";
+import NewsCard from "./components/NewsCard";
 
-function App() {
+export default function App() {
   const [rows, setRows] = useState([]);
-
-  async function addExampleRow() {
-    console.log("Supabase bağlantısı test ediliyor:", supabase);
-    await supabase.from("news_list").insert([
-      { 
-        title: "Test Haberi", 
-        source: "Deneme", 
-        link: "https://gundemfethiye.com", 
-        status: "Bekliyor", 
-        added_by: "Burak" 
-      }
-    ]);
-    loadData();
-  }
 
   async function loadData() {
     const { data } = await supabase
       .from("news_list")
       .select("*")
       .order("added_at", { ascending: false })
-      .limit(10);
+      .limit(20);
     setRows(data || []);
   }
 
@@ -32,16 +19,26 @@ function App() {
   }, []);
 
   return (
-    <div style={{ fontFamily: "system-ui", padding: "30px" }}>
+    <div style={{ fontFamily: "system-ui", padding: 24 }}>
       <h1>Gündem Fethiye Haber Takip Paneli</h1>
-      <button onClick={addExampleRow}>Örnek Haber Ekle</button>
-      <table style={{ marginTop: "20px", width: "100%", borderCollapse: "collapse" }}>
+
+      <NewsCard
+        title="Fethiye'de yağış sonrası ulaşımda aksamalar"
+        source="Örnek Kaynak"
+        link="https://gundemfethiye.com"
+      />
+
+      <button onClick={loadData}>Listeyi Yenile</button>
+
+      <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 20 }}>
         <thead>
           <tr>
-            <th style={{ textAlign: "left", borderBottom: "1px solid #ddd" }}>Başlık</th>
-            <th style={{ textAlign: "left", borderBottom: "1px solid #ddd" }}>Kaynak</th>
-            <th style={{ textAlign: "left", borderBottom: "1px solid #ddd" }}>Durum</th>
-            <th style={{ textAlign: "left", borderBottom: "1px solid #ddd" }}>Link</th>
+            <th>Başlık</th>
+            <th>Kaynak</th>
+            <th>Kategori</th>
+            <th>Durum</th>
+            <th>Haberi Yapan</th>
+            <th>Link</th>
           </tr>
         </thead>
         <tbody>
@@ -49,8 +46,18 @@ function App() {
             <tr key={r.id}>
               <td>{r.title}</td>
               <td>{r.source}</td>
+              <td>{r.category}</td>
               <td>{r.status}</td>
-              <td><a href={r.link} target="_blank" rel="noreferrer">Aç</a></td>
+              <td>{r.owner}</td>
+              <td>
+                {r.link ? (
+                  <a href={r.link} target="_blank" rel="noreferrer">
+                    Aç
+                  </a>
+                ) : (
+                  "-"
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -58,5 +65,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
