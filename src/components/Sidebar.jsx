@@ -9,14 +9,21 @@ export default function Sidebar({ selected, onSelect }) {
     loadPanels();
   }, []);
 
-  async function loadPanels() {
-    const { data, error } = await supabase
-      .from("panels")
-      .select("*")
-      .order("id");
-    if (error) console.error("Panel yüklenemedi:", error);
-    else setPanels(data || []);
+async function loadPanels() {
+  const { data, error } = await supabase
+    .from("panels")
+    .select("*")
+    .order("id");
+
+  if (error) {
+    console.error("Panel verisi alınamadı:", error.message);
+    alert("Supabase bağlantı hatası: " + error.message);
+  } else {
+    console.log("Paneller:", data);
+    setPanels(data || []);
   }
+}
+
 
   // Yeni başlık ekleme
   async function addPanel() {
